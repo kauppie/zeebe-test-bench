@@ -11,6 +11,7 @@ fi
 
 kafkacontainer=zeebe-test-bench-kafka-1
 
+docker network inspect kafka_network >/dev/null 2>&1 || docker network create kafka_network
 
 docker compose -f $compose up -d postgres
 docker compose -f $compose up -d --force-recreate kafka

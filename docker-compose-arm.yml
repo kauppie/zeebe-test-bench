@@ -11,7 +11,7 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - devenv
-    
+
   kafka:
     image: ubuntu/kafka:3.1-22.04_edge
     ports:
@@ -22,7 +22,7 @@ services:
     volumes:
       - ./server.properties:/etc/kafka/server.properties
     environment:
-      - 'KAFKA_HEAP_OPTS=-Xmx500m -Xms500m'
+      - "KAFKA_HEAP_OPTS=-Xmx500m -Xms500m"
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9093,LOCALHOST://:9092
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9093,LOCALHOST://localhost:9092
@@ -34,6 +34,7 @@ services:
       - KAFKA_REPLICA_FETCH_MAX_BYTES=3145729
     networks:
       - devenv
+      - kafka_network
 
   kafka-setup:
     image: ubuntu/kafka:3.1-22.04_edge
@@ -47,11 +48,11 @@ services:
     volumes:
       - ./topics:/tmp/topics.txt
       - ./create-topics.sh:/tmp/create-topics.sh
-    entrypoint: [ '/bin/bash', '-c' ]
+    entrypoint: ["/bin/bash", "-c"]
     command: sh /tmp/create-topics.sh
     networks:
       - devenv
-  
+
   get-kafka-exporter:
     image: busybox:1.35.0
     volumes:
@@ -69,7 +70,7 @@ services:
       - "9600:9600"
     volumes:
       - ./config/zeebe/application-arm.yaml:/usr/local/zeebe/config/application.yaml
-      - ./exporters/zeebe-kafka-exporter-3.1.1-jar-with-dependencies.jar:/usr/local/zeebe/lib/zeebe-kafka-exporter.jar  
+      - ./exporters/zeebe-kafka-exporter-3.1.1-jar-with-dependencies.jar:/usr/local/zeebe/lib/zeebe-kafka-exporter.jar
     depends_on:
       - kafka
     networks:
@@ -94,7 +95,7 @@ services:
       - zeebe
     networks:
       - devenv
-  
+
   postgres:
     image: arm64v8/postgres:11-bullseye
     restart: always
@@ -107,7 +108,7 @@ services:
         max-size: 10m
         max-file: "3"
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres:/var/lib/postgres/data
@@ -124,3 +125,5 @@ networks:
   devenv:
     driver: bridge
     name: devenv
+  kafka_network:
+    external: true
